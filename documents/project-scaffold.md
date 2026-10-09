@@ -6,15 +6,15 @@ Reusable starter template. Fill **Project variables**, then follow every step us
 
 | Variable | Example (this project) | Notes |
 |----------|------------------------|--------|
-| `REPO_URL` | `https://github.com/donpork/project-scaffold` | Full GitHub repo URL (not just the org) |
+| `REPO_URL` | *(ask the user — no default)* | Full GitHub repo URL (not just the org). Do not invent or reuse a previous URL. |
 | `LOCAL_DIR` | `~/Documents/Studio/Processing/project-scaffold` | Absolute or `~`-relative path on the target machine |
 | `MACHINE` | Dan's MacBook Air (self-hosted worker) | Where the agent must run |
 | `APP_HEADING` | `Project scaffold - IXD 404` | Exact `<h1>` text in `App.jsx` |
 | `NODE_MAJOR` | `24` | Must match `node -v` major, `.nvmrc`, and `engines.node` |
 
-Derived helpers:
+Derived helpers (set only after `REPO_URL` is provided):
 
-- `REPO_NAME` — last path segment of `REPO_URL` (example: `project-scaffold`)
+- `REPO_NAME` — last path segment of `REPO_URL` (strip a trailing `.git` if present); use for `package.json` `"name"`
 - `ORIGIN` — same as `REPO_URL` (`.git` suffix optional)
 
 Set up a minimal, working React project foundation in this repo. The result should be a clean skeleton I can build on: a local dev server with live preview (Vite), Node/npm so I can install libraries, and React with plain JavaScript (JSX). Nothing more.
@@ -27,17 +27,18 @@ Run this task on **`MACHINE`** as a **self-hosted worker**. Do not use a cloud V
 - **Don't destroy anything.** If the repo already has files (especially `package.json`, `index.html`, or `src/`), stop and tell me what's there before changing anything.
 - **Use current stable versions.** Install the latest React, Vite, and React plugin, and make sure they're compatible with each other. Set `.nvmrc` / `engines` to **`NODE_MAJOR`** from `node -v` on `MACHINE`. Don't pin to versions from memory; check what's installed.
 - **Verify, don't assume.** Run each command and confirm it works before moving on.
-- **One pass.** Gather everything you need from this doc and complete the bootstrap without asking clarifying questions, unless a hard blocker remains (missing Node, conflicting tracked files, auth failure).
+- **One pass.** Gather everything you need from this doc and complete the bootstrap without asking clarifying questions, unless a hard blocker remains (missing `REPO_URL`, missing Node, conflicting tracked files, auth failure). Always ask for `REPO_URL` first if it is not already provided.
 - **Node majors must agree.** Before any commit, confirm that `.nvmrc`, `package.json` `engines.node`, and `node -v` all share the same major (`NODE_MAJOR`). Fix mismatches before committing.
 
 ## 1. Repository
 
-1. Work in `LOCAL_DIR` on `MACHINE`.
-2. If the directory is empty and not a git repo: `git clone REPO_URL .` (or `git init`, add `origin` = `ORIGIN`, and fetch/checkout `main`).
-3. Confirm `git remote -v` shows `origin` → `REPO_URL` (or the `.git` equivalent). Fix the remote if wrong.
-4. Confirm the default branch with `git status` / `git branch` (expect `main`).
-5. If it's empty of project files, set up the skeleton at the **repo root** (not a subfolder).
-6. Handle remote history per section 4. Do **not** force-push.
+1. Ask the user for the GitHub repo URL; do not proceed until provided. Set `REPO_URL` to that value, then derive `REPO_NAME` and `ORIGIN` from it.
+2. Work in `LOCAL_DIR` on `MACHINE`.
+3. If the directory is empty and not a git repo: `git clone REPO_URL .` (or `git init`, add `origin` = `ORIGIN`, and fetch/checkout `main`).
+4. Confirm `git remote -v` shows `origin` → `REPO_URL` (or the `.git` equivalent). Fix the remote if wrong.
+5. Confirm the default branch with `git status` / `git branch` (expect `main`).
+6. If it's empty of project files, set up the skeleton at the **repo root** (not a subfolder).
+7. Handle remote history per section 4. Do **not** force-push.
 
 ## 2. Node + npm
 
@@ -171,7 +172,7 @@ Open the URL Vite prints (default `http://localhost:5173`).
 
 Use this section so the next agent can finish without back-and-forth. Prefer **Project variables** above; the values below are the filled example for this repo.
 
-1. **Full repo URL.** Always use `REPO_URL` (`https://github.com/donpork/project-scaffold`). The original draft only had `https://github.com/donpork/`, which is not enough to clone or set `origin`.
+1. **Full repo URL from the user.** Ask for `REPO_URL` before any clone, remote, or push work. It must be the full GitHub repo URL (not just an org). Derive `REPO_NAME` / `ORIGIN` from that URL; never hardcode a previous project's link.
 2. **Run on `MACHINE` as a self-hosted worker.** Local target: `LOCAL_DIR`. Cloud VMs do not have this Mac's GitHub push credentials, and the cloud terminal cannot see the Mac path (`cd LOCAL_DIR` fails there).
 3. **GitHub README vs empty remote.** If the remote has a README/initial commit, merge with `git merge origin/main --allow-unrelated-histories`, keep the README, then add run instructions. If the remote is empty, push directly after verify. Never force-push.
 4. **Push after verify — automatic.** Once verification passes, push to GitHub immediately (especially the initial push). No confirmation step.
