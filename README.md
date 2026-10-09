@@ -6,7 +6,7 @@ Minimal Vite + React (JSX) skeleton.
 
 ## Requirements
 
-- Node.js 22+
+- Node.js 24+
 - npm
 
 ## Setup
