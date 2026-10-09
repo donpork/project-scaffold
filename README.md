@@ -1,4 +1,6 @@
-# tmp-66f74455910d8eb9
+# project-scaffold
+
+Basic project setup using Vite, Node, and Git.
 
 Minimal Vite + React (JSX) skeleton.
 
